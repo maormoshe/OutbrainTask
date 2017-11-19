@@ -1,0 +1,125 @@
+#OutbrainTask body {
+    font-family: 'Open Sans', sans-serif;
+    margin: 0px;
+    padding: 0px 10px;
+    min-width: 734px;
+    color: #c0c0c0;
+}
+
+#OutbrainTask header {
+    background-color: #4b6ea8;
+    width: 100%;
+    height: 30px;
+    border-radius: 0px 0px 6px 6px;
+}
+
+#OutbrainTask #facebook {
+    font-family: 'Lucida Grande';
+    font-size: 20px;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 800;
+    line-height: 30px;
+    color: white;
+    padding-left: 10px;
+}
+
+#OutbrainTask #day {
+    position: relative;
+    margin-top: 50px;
+    margin-bottom: 80px;
+    height: 740px;
+    width: 718px;
+}
+
+#OutbrainTask #time-line {
+    height: 720px;
+    width: 85px;
+    position: absolute;
+    top: 50%;
+    left: 0px;
+    transform: translateY(-50%);
+}
+
+#OutbrainTask .hour {
+    box-sizing: border-box;
+    height: 30px;
+    text-align: right;
+    padding-right: 5px;
+    position: relative;
+    top: -15px;
+}
+
+.font-size12 {
+    font-size: 12px;
+}
+
+.font-size14 {
+    font-size: 14px;
+}
+
+.font-weight700 {
+    font-weight: 700;
+}
+
+#OutbrainTask .gray1 {
+    color: #c0c0c0;
+}
+
+#OutbrainTask .gray2 {
+    color: #5b5b5b;
+}
+
+#OutbrainTask #container {
+    border-left: 1px solid #c0c0c0;
+    box-sizing: content-box;
+    height: 720px;
+    width: 600px;
+    padding: 0px 10px;
+    background-color: #ececec;
+    position: absolute;
+    top: 50%;
+    right: 0px;
+    transform: translateY(-50%);
+}
+
+#OutbrainTask .event {
+    box-sizing: border-box;
+    padding: 5px 10px;
+    background-color: #ffffff;
+    position: absolute;
+    overflow: hidden;
+    border-style: solid;
+    border-top-width: 1px;
+    border-top-color: #c0c0c0;
+    border-right-width: 1px;
+    border-top-color: #c0c0c0;
+    border-bottom-width: 1px;
+    border-bottom-color: #c0c0c0;
+    border-left-width: 6px;
+    border-left-color: #496ca6;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+#OutbrainTask .event-header {
+    display: block;
+    color: #496ca6;
+    font-size: 13px;
+}
+
+#OutbrainTask .event-header:before {
+    content: "Sample Item";
+}
+
+#OutbrainTask .event-content {
+    display: block;
+}
+
+#OutbrainTask .event-content:before{
+    content: "Sample Location";
+}
+
+#OutbrainTask .blue{
+    color: #496ca6;
+}

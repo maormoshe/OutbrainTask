@@ -1,0 +1,210 @@
+"use strict";
+(function () {
+    let originalData =
+        [
+            {id: 1, start: 60, end: 150},
+            {id: 2, start: 520, end: 615},
+            {id: 3, start: 510, end: 570},
+            {id: 4, start: 540, end: 585},
+            {id: 5, start: 645, end: 705},
+            {id: 6, start: 600, end: 660},
+            {id: 7, start: 600, end: 660},
+            {id: 8, start: 0, end: 30},
+        ];
+
+    let initializeData = initializeLeftTopAttributes(originalData);
+
+    function initializeLeftTopAttributes(data) {
+        if (!Array.isArray(data) || data.length === 0) {
+            return [];
+        }
+
+        let myData = JSON.parse(JSON.stringify(data));
+        myData = validation(myData);
+
+        if (myData.length > 0) {
+            myData = removeDuplicatesEvents(myData);
+        }
+
+        myData = sortData(myData);
+        let groups = getGroups(myData);
+        let groupsColumns = getGroupsColumns(groups);
+
+        groupsColumns.forEach(function (group) {
+            group.forEach(function (column, index) {
+                column.forEach(function (event) {
+                    event.top = event.start;
+                    event.left = (100 / group.length) * index;
+                    event.width = (100 / group.length);
+                });
+            });
+        });
+        return myData;
+    }
+
+    function validation(data) {
+        return data.filter(function (event) {
+            let opt1 = typeof (event.id) === 'number';
+            let opt2 = typeof(event.start) === 'number';
+            let opt3 = typeof(event.end) === 'number';
+            if (!opt1 || !opt2 || !opt3) {
+                return false;
+            }
+            let opt4 = (event.start >= 0 && event.start < 720);
+            let opt5 = (event.end > 0 && event.end <= 720);
+            return opt4 && opt5;
+        });
+    }
+
+    function removeDuplicatesEvents(data) {
+        return data.filter(function (obj, pos, arr) {
+            return arr.map(function (mapObj) {
+                return mapObj['id'];
+            }).indexOf(obj['id']) === pos;
+        });
+    }
+
+    function sortData(data) {
+        data.sort(function (a, b) {
+            return a.start - b.start
+        });
+        return data;
+    }
+
+    function getGroups(data) {
+        let groups = [];
+        let checked = [];
+
+        data.forEach(function (event) {
+            if (checked.includes(event)) {
+                return;
+            }
+            let group = getGroup(data, [event], []);
+            checked = checked.concat(group);
+            groups.push(group);
+        });
+        return groups;
+    }
+
+    function getGroup(data, queue, group) {
+        if (queue.length === 0)
+            return group;
+
+        let event = queue[0];
+        queue.splice(0, 1);
+
+        if (group.indexOf((event)) === -1) {
+            group.push(event);
+        }
+
+        let collusions = getCollisions(data, event);
+
+        collusions.forEach(function (collidedElement) {
+            if (!group.includes(collidedElement)) {
+                queue.push(collidedElement);
+            }
+        });
+        return getGroup(data, queue, group);
+    }
+
+    function getCollisions(data, event) {
+        return data.filter(function (currentEvent) {
+            if (event.id !== currentEvent.id) {
+                return hasCollision(event, currentEvent);
+            }
+            return false;
+        })
+    }
+
+    function hasCollision(event1, event2) {
+        return event1.start < event2.end && event1.end > event2.start;
+    }
+
+    function getGroupsColumns(groups) {
+        let groupsColumns = [];
+        groups.forEach(function (group) {
+            let groupColumns = getGroupColumns(group);
+            groupsColumns.push(groupColumns);
+        });
+        return groupsColumns;
+    }
+
+    function getGroupColumns(group) {
+        let groupColumns = [];
+        let checked = [];
+        group.forEach(function (event) {
+            if (!checked.includes(event)) {
+                var sameColumn = getColumn(group, event, checked);
+                checked = checked.concat(sameColumn);
+                groupColumns.push(sameColumn);
+            }
+        });
+        return groupColumns;
+    }
+
+    function getColumn(group, event, checked) {
+        let column = [event];
+        let current = event;
+        group.forEach(function (event) {
+            if (event.start >= current.end && !checked.includes(event)) {
+                column.push(event);
+                current = event;
+            }
+        });
+        return column;
+    }
+
+    function printEvents(data) {
+        data.forEach(function (event) {
+            printEvent(event);
+        })
+    }
+
+    function printEvent(event) {
+        let div = getDivElement(event);
+        let header = document.createElement('span');
+        let content = document.createElement('span');
+        let hasPlaceForHeader = (event.end - event.start) > 29;
+        let hasPlaceForContent = (event.end - event.start) > 44;
+        header.className += " event-header";
+        content.className += " event-content";
+        if (hasPlaceForHeader) {
+            div.appendChild(header);
+        }
+        if (hasPlaceForContent) {
+            div.appendChild(content);
+        }
+        document.getElementById('container').appendChild(div);
+    }
+
+    function getDivElement(event) {
+        let div = document.createElement('div');
+        div.id = event.id;
+        div.style.top = event.top + 'px';
+        div.style.height = (event.end - event.start) + 'px';
+        div.className += " event";
+
+        let isAlignToLeft = (event.left === 0);
+        let isAlignToRight = ((100 - (event.left + event.width)) < 0.001);
+
+        if (event.width === 100) {
+            div.style.left = '10px';
+            div.style.width = 'calc(' + event.width + '% - 20px';
+        } else if (isAlignToLeft) {
+            div.style.left = '10px';
+            div.style.width = 'calc(' + event.width + '% - 10px';
+        } else {
+            div.style.left = event.left + '%';
+            if (isAlignToRight) {
+                div.style.width = 'calc(' + event.width + '% - 10px';
+            } else {
+                div.style.width = event.width + '%';
+            }
+        }
+        return div;
+    }
+
+    window.onload = function () {
+        printEvents(initializeData);
+    };
+}());
